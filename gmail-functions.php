@@ -22,7 +22,29 @@ function _gmail_listlabels ($u,$p){
                 return(false);
         endif;
 }
-function _getgmail($u,$p,$label,$read = 'UNSEEN',$dbcommit = FALSE ) // $read can be UNSEEN or ALL (unread or any)
+function _getgmail($u,$p,$label,$read = 'UNSEEN') // $read can be UNSEEN or ALL (unread or any)
+        $conn = _gmailconnect ($u, $p, $label);
+        $email = imap_search($conn,$read);
+        if ($email):
+                rsort($email);
+        $i=0;
+        foreach ($email as $e):
+                $output[$i]['body'] = quoted_printable_decode(imap_fetchbody($conn,$e,2));              
+                $header = imap_fetch_overview($conn,$e,0);
+                $header = $header[0];
+                $output[$i]['messageid'] = $header->message_id;
+                $output[$i]['subject'] = $header->subject;
+                $output[$i]['to'] = $header->to;
+                $output[$i]['from'] = $header->from;
+                $output[$i]['date'] = $header->date;        
+		$i++;               
+        endforeach;
+        return($output);
+        else:
+        return(false);
+        endif;
+    }
+function _getgmaildb($u,$p,$label,$read = 'UNSEEN',$dbcommit = FALSE ) // $read can be UNSEEN or ALL (unread or any)
         $db['dbhost'] = 'localhost';
         $db['user'] = 'root';
         $db['pass'] = 'password';
