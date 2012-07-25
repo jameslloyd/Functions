@@ -1,9 +1,7 @@
 <?php
 function _curl($url)
 	{
-        if(!function_exists(curl_init())):
-        	die('Curl Extension Not found / enabled');
-        endif;
+
 		$ch = curl_init();  
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
@@ -15,7 +13,7 @@ function _curl($url)
         	return(false);
         endif;	
 }
-_curl_linkstatus($url, $timeout = 30)
+function _curl_linkstatus($url, $timeout = 30)
 	{
         $ch = curl_init(); // get cURL handle
         // set cURL options

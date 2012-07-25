@@ -1,11 +1,27 @@
 <?php
-/*
-Description: Twitter PHP code
-Author: Andrew MacBean
-Version: 1.0.0
-*/
+function _twitter_get_new($twitter_id)
+{
+    if(!function_exists('_curl')):
+        	die('include curl-functions.php');
+    endif;
+	$data = _curl("http://twitter.com/statuses/user_timeline/$twitter_id.xml");
+	$data = _xml_xml2array($data);
+	return($data);
+}
+function _twitter_get_profile($twitter_id)
+	{
+	$data = _twitter_get_new($twitter_id);
+	if ($data['statuses']['status'][0]['user']):
+		return($data['statuses']['status'][0]['user']);
+		//print_r($data['statuses']['status'][0]['user']);
+	else:
+		return(false);
+	endif;
+	}
 
-/** Method to make twitter api call for the users timeline in XML */ 
+
+
+
 function _twitter_status($twitter_id) {	
 	$c = curl_init();
 	curl_setopt($c, CURLOPT_URL, "http://twitter.com/statuses/user_timeline/$twitter_id.xml");
@@ -67,6 +83,7 @@ function _twitter_get_tweets($twitter_id,
     echo $result;
 }
 
+
 function _twitter_get_tweets_array($twitter_id, 
 					$nooftweets=3, 
 					$dateFormat="D jS M y H:i", 
@@ -78,17 +95,25 @@ function _twitter_get_tweets_array($twitter_id,
 		foreach ($twitter_xml->status as $key => $status) {
 			if ($includeReplies == true | substr_count($status->text,"@") == 0 | strpos($status->text,"@") != 0) {
 				$message = _twitter_processLinks($status->text);
-				$output[$i]['timestamp'] = date('U',strtotime($status->created_at));
-				$output[$i]['created']= date($dateFormat,strtotime($status->created_at));
-				$output[$i]['tweet'] = $message;
+				$output['tweets'][$i]['timestamp'] = date('U',strtotime($status->created_at));
+				$output['tweets'][$i]['created']= date($dateFormat,strtotime($status->created_at));
+				$output['tweets'][$i]['tweet'] = $message;
 				++$i;
-				$output['time'][date('U',strtotime($status->created_at))] = array ('user' => $twitter_id, 'tweet' => $message);
+				$output['tweets']['time'][date('U',strtotime($status->created_at))] = array ('user' => $twitter_id, 'tweet' => $message);
+				$output['profile']['name'] = $status->user->name[0];
+				$output['profile']['screen_name'] = $status->user->screen_name;
+				if(!empty($status->user->location)):
+					$output['profile']['location'] = $status->user->location;
+				endif;
+				if(!empty($status->user->description)):
+					$output['profile']['description'] = $status->user->description;
+				endif;				
 				if ($i == $nooftweets) break;
     			}
     		}
     } 
 	else {
-        $output[] = '';
+        //w$output['tweets'][] = '';
     }	
 	//rsort($output['time']);
     return $output;
