@@ -21,6 +21,7 @@ function _gmail_listlabels ($u,$p){
         else:
                 return(false);
         endif;
+		imap_close($conn);
 }
 function _getgmail($u,$p,$label,$read = 'UNSEEN') // $read can be UNSEEN or ALL (unread or any)
         $conn = _gmailconnect ($u, $p, $label);
@@ -43,6 +44,7 @@ function _getgmail($u,$p,$label,$read = 'UNSEEN') // $read can be UNSEEN or ALL 
         else:
         return(false);
         endif;
+		imap_close($conn);
     }
 function _getgmaildb($u,$p,$label,$read = 'UNSEEN',$dbcommit = FALSE ) // $read can be UNSEEN or ALL (unread or any)
         $db['dbhost'] = 'localhost';
@@ -84,8 +86,5 @@ function _getgmaildb($u,$p,$label,$read = 'UNSEEN',$dbcommit = FALSE ) // $read 
         else:
         return(false);
         endif;
-        
-        
-
-        
+        imap_close($conn);
     }
