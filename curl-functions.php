@@ -1,6 +1,9 @@
 <?php
 function _curl($url)
 	{
+        if(!function_exists(curl_init())):
+        	die('Curl Extension Not found / enabled');
+        endif;
 		$ch = curl_init();  
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1); 
