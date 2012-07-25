@@ -12,3 +12,17 @@ function _curl($url)
         	return(false);
         endif;	
 }
+_curl_linkstatus($url, $timeout = 30)
+	{
+        $ch = curl_init(); // get cURL handle
+        // set cURL options
+        $opts = array(CURLOPT_RETURNTRANSFER => true, // do not output to browser
+                                  CURLOPT_URL => $url,            // set URL
+                                  CURLOPT_NOBODY => true,                 // do a HEAD request only
+                                  CURLOPT_TIMEOUT => $timeout);   // set timeout
+        curl_setopt_array($ch, $opts); 
+        curl_exec($ch); // do it!
+        $retval = curl_getinfo($ch, CURLINFO_HTTP_CODE); // check if HTTP OK
+        curl_close($ch); // close handle
+        return $retval;
+}
